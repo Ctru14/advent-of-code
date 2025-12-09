@@ -1,5 +1,5 @@
+use std::ops::RangeInclusive;
 use std::str::Lines;
-use std::{ops::RangeInclusive};
 
 pub(crate) fn solve_day5() {
     // Get input list of ranges and IDs

@@ -1,4 +1,4 @@
-use std::{ops::RangeInclusive};
+use std::ops::RangeInclusive;
 
 pub(crate) fn solve_day2() {
     // Get file input

@@ -40,14 +40,14 @@ fn solve_quantum_trachyon(grid: &Vec<Vec<char>>) -> usize {
             } else if grid[r][c] == '|' {
                 // Add the total ways a beam could have gotten to that spot
                 // Number above it + numbers above the splitters on each side
-                let mut count = timelines[r-1][c];
+                let mut count = timelines[r - 1][c];
                 // Left
-                if c as i32-1 >= 0 && grid[r][c-1] == '^' {
-                    count += timelines[r-1][c-1];
+                if c as i32 - 1 >= 0 && grid[r][c - 1] == '^' {
+                    count += timelines[r - 1][c - 1];
                 }
                 // Right
-                if c+1 < grid[r].len() && grid[r][c+1] == '^' {
-                    count += timelines[r-1][c+1];
+                if c + 1 < grid[r].len() && grid[r][c + 1] == '^' {
+                    count += timelines[r - 1][c + 1];
                 }
                 timelines[r][c] = count;
                 row_count += count;
@@ -63,13 +63,12 @@ fn solve_quantum_trachyon(grid: &Vec<Vec<char>>) -> usize {
 /// Tracks a trachyon beam down the grid
 /// Returns the number of splits
 fn track_classical_trachron(grid: &mut Vec<Vec<char>>) -> usize {
-    
     // Index bounds
     let rows = grid.len();
     let cols = grid[0].len();
 
     // Tracking number of times a beam gets split
-    let mut splits: usize = 0; 
+    let mut splits: usize = 0;
 
     // Notes:
     // There are no splitters on the grid column borders
@@ -81,16 +80,16 @@ fn track_classical_trachron(grid: &mut Vec<Vec<char>>) -> usize {
         for c in 0..cols {
             // Two rules for beam travel:
             // 1. If empty space '.', any beam (or source 'S') above travels down to this space
-            if grid[r][c] == '.' && (grid[r-1][c] == '|' || grid[r-1][c] == 'S' ) {
+            if grid[r][c] == '.' && (grid[r - 1][c] == '|' || grid[r - 1][c] == 'S') {
                 grid[r][c] = '|';
             }
 
             // 2. If splitter '^', any beam above gets placed on right and left of the splitter
             // Update the split counter
-            if grid[r][c] == '^' && grid[r-1][c] == '|' {
+            if grid[r][c] == '^' && grid[r - 1][c] == '|' {
                 splits += 1;
-                grid[r][c-1] = '|';
-                grid[r][c+1] = '|';
+                grid[r][c - 1] = '|';
+                grid[r][c + 1] = '|';
             }
         }
     }

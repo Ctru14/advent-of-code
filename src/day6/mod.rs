@@ -2,7 +2,7 @@ use std::str::Lines;
 
 pub(crate) fn solve_day6() {
     // Get the math homework
-    let binding =    include_str!("day6-input.txt");
+    let binding = include_str!("day6-input.txt");
     // let binding = include_str!("day6-test.txt");
     let lines: Lines<'_> = binding.lines();
 
