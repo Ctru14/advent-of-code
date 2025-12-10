@@ -1,0 +1,249 @@
+Squares: 248 x 248:
+                                                                                                                           RGR
+                                                                                                                       RGR G G
+                                                                                                                     RGR G G G
+                                                                                                                 RGR G   G G G
+                                                                                                                 G G G   G G G   RGR
+                                                                                                                 G G G   G G RGR G G
+                                                                                                                 G RGR   G G   G G G
+                                                                                                                 G       G G   G G RGR
+                                                                                                                 G       RGR   G G   G
+                                                                                                                 G             RGR   G
+                                                                                                               RGR                   G
+                                                                                                         RGR   G                     G
+                                                                                                         G RGR G                     G
+                                                                                                         G   RGR                     G
+                                                                                                         G                           G   RGR
+                                                                                                         G                           G RGR G
+                                                                                                     RGR G                           G G   G
+                                                                                                     G G G                           G G   RGR
+                                                                                                     G G G                           RGR     G
+                                                                                                     G RGR                                   G
+                                                                                                     G                                       G RGR
+                                                                                                 RGR G                                       G G G
+                                                                                                 G G G                                       RGR G
+                                                                                                 G RGR                                           G
+                                                                                               RGR                                               G
+                                                                                             RGR                                                 G
+                                                                                             G                                                   G   RGR
+                                                                                             G                                                   RGR G G
+                                                                                           RGR                                                     G G G
+                                                                                           G                                                       RGR G
+                                                                                         RGR                                                           G
+                                                                                         G                                                             RGR
+                                                                                       RGR                                                               G
+                                                                                      RR                                                                 G
+                                                                                      G                                                                  RGR
+                                                                                      G                                                                    G RGR
+                                                                                      G                                                                    RGR G
+                                                                                      G                                                                        RGR
+                                                                                    RGR                                                                          G
+                                                                                  RGR                                                                            G
+                                                                                  G                                                                              G RGR
+                                                                                  G                                                                              RGR G
+                                                                               RGGR                                                                                  G
+                                                                             RGR                                                                                     G
+                                                                             G                                                                                       RGR
+                                                                           RGR                                                                                         G
+                                                                         RGR                                                                                           G
+                                                                         G                                                                                             RGR
+                                                                         G                                                                                               RGGR
+                                                                       RGR                                                                                                  G
+                                                                      RR                                                                                                    G
+                                                                      G                                                                                                     RR
+                                                                      G                                                                                                      RGR
+                                                                      G                                                                                                        RGGR
+                                                                   RGGR                                                                                                           G
+                                                                  RR                                                                                                              G
+                                                                  G                                                                                                               RR
+                                                               RGGR                                                                                                                G
+                                                             RGR                                                                                                                   G
+                                                             G                                                                                                                     RGR
+                                                            RR                                                                                                                       G
+                                                            G                                                                                                                        RGR
+                                                            G                                                                                                                          RGR
+                                                         RGGR                                                                                                                            G
+                                                       RGR                                                                                                                               G
+                                                       G                                                                                                                                 RGR
+                                                     RGR                                                                                                                                   G
+                                                     G                                                                                                                                     RGR
+                                                     G                                                                                                                                       RGGR
+                                                    RR                                                                                                                                          G
+                                                    G                                                                                                                                           RGR
+                                                  RGR                                                                                                                                             G
+                                                  G                                                                                                                                               RGR
+                                                RGR                                                                                                                                                 G
+                                                G                                                                                                                                                   RR
+                                             RGGR                                                                                                                                                    G
+                                             G                                                                                                                                                       RR
+                                           RGR                                                                                                                                                        G
+                                          RR                                                                                                                                                          G
+                                          G                                                                                                                                                           RGR
+                                          G                                                                                                                                                             RGGR
+                                      RGGGR                                                                                                                                                                G
+                                      G                                                                                                                                                                    RGR
+                                      RR                                                                                                                                                                     G
+                                       G                                                                                                                                                                     RGGR
+                                   RGGGR                                                                                                                                                                        G
+                                   G                                                                                                                                                                            RGR
+                                 RGR                                                                                                                                                                              G
+                                 G                                                                                                                                                                               RR
+                               RGR                                                                                                                                                                               G
+                               G                                                                                                                                                                                 RGGGGGR
+                             RGR                                                                                                                                                                                       G
+                             G                                                                                                                                                                                        RR
+                            RR                                                                                                                                                                                        G
+                            G                                                                                                                                                                                         RGGGGR
+                         RGGR                                                                                                                                                                                              G
+                         G                                                                                                                                                                                                 RGR
+                     RGGGR                                                                                                                                                                                                   G
+                     G                                                                                                                                                                                                       RGR
+                     RGGR                                                                                                                                                                                                      G
+                        G                                                                                                                                                                                                      RR
+                    RGGGR                                                                                                                                                                                                       G
+                    G                                                                                                                                                                                                           RR
+                 RGGR                                                                                                                                                                                                            G
+                 G                                                                                                                                                                                                               RGR
+               RGR                                                                                                                                                                                                                 G
+               G                                                                                                                                                                                                                   RGR
+           RGGGR                                                                                                                                                                                                                     G
+           G                                                                                                                                                                                                                         RGGGR
+           RGGR                                                                                                                                                                                                                          G
+              G                                                                                                                                                                                                                          RR
+          RGGGR                                                                                                                                                                                                                           G
+          G                                                                                                                                                                                                                               RGGGGGGR
+      RGGGR                                                                                                                                                                                                                                      G
+      G                                                                                                                                                                                                                                     RGGGGR
+      RGGR                                                                                                                                                                                                                                  G
+         G                                                                                                                                                                                                                                  RGGGGGGR
+   RGGGGGR                                                                                                                                                                                                                                         G
+   G                                                                                                                                                                                                                                          RGGGGR
+ RGR                                                                                                                                                                                                                                          G
+ G                                                                                                                                                                                                                                            RGGGGGGGGR
+ RGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGR                            G
+                                                                                                                                                                                                                          G                          RGR
+     RGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGR                          G
+     G                                                                                                                                                                                                                                              RR
+RGGGGR                                                                                                                                                                                                                                              G
+G                                                                                                                                                                                                                                                   RGR
+RGGGR                                                                                                                                                                                                                                                 G
+    G                                                                                                                                                                                                                                           RGGGGGR
+  RGR                                                                                                                                                                                                                                           G
+  G                                                                                                                                                                                                                                             RGR
+  RGGGGGR                                                                                                                                                                                                                                         G
+        G                                                                                                                                                                                                                                  RGGGGGGR
+       RR                                                                                                                                                                                                                                  G
+       G                                                                                                                                                                                                                                   RGGGR
+       RGGGGGR                                                                                                                                                                                                                                 G
+             G                                                                                                                                                                                                                               RGR
+            RR                                                                                                                                                                                                                               G
+            G                                                                                                                                                                                                                           RGGGGR
+            RGGGGGGR                                                                                                                                                                                                                    G
+                   G                                                                                                                                                                                                                RGGGR
+                  RR                                                                                                                                                                                                                G
+                  G                                                                                                                                                                                                                 RGR
+                RGR                                                                                                                                                                                                                   G
+                G                                                                                                                                                                                                                     RR
+                RGGGGGR                                                                                                                                                                                                                G
+                      G                                                                                                                                                                                                           RGGGGR
+                      RGGGR                                                                                                                                                                                                       G
+                          G                                                                                                                                                                                                   RGGGR
+                       RGGR                                                                                                                                                                                                   G
+                       G                                                                                                                                                                                                    RGR
+                       RGGGR                                                                                                                                                                                                G
+                           G                                                                                                                                                                                             RGGR
+                           RGGR                                                                                                                                                                                          G
+                              G                                                                                                                                                                                         RR
+                              RGR                                                                                                                                                                                       G
+                                G                                                                                                                                                                                    RGGR
+                                RGR                                                                                                                                                                                  G
+                                  G                                                                                                                                                                                 RR
+                                  RGR                                                                                                                                                                               G
+                                    G                                                                                                                                                                              RR
+                                    RR                                                                                                                                                                             G
+                                     G                                                                                                                                                                        RGGGGR
+                                     RGGR                                                                                                                                                                     G
+                                        G                                                                                                                                                                     RR
+                                        RR                                                                                                                                                                     G
+                                         G                                                                                                                                                                  RGGR
+                                         RGGR                                                                                                                                                               G
+                                            G                                                                                                                                                             RGR
+                                            RGR                                                                                                                                                           G
+                                              RR                                                                                                                                                          G
+                                               G                                                                                                                                                         RR
+                                               RGR                                                                                                                                                       G
+                                                 G                                                                                                                                                     RGR
+                                                 G                                                                                                                                                 RGGGR
+                                                 RGR                                                                                                                                               G
+                                                   G                                                                                                                                             RGR
+                                                   RGGR                                                                                                                                          G
+                                                      G                                                                                                                                        RGR
+                                                      RGR                                                                                                                                      G
+                                                        RGR                                                                                                                                    G
+                                                          G                                                                                                                                   RR
+                                                          RR                                                                                                                                  G
+                                                           G                                                                                                                                RGR
+                                                           G                                                                                                                              RGR
+                                                           RGGR                                                                                                                           G
+                                                              G                                                                                                                         RGR
+                                                              RGR                                                                                                                       G
+                                                                G                                                                                                                     RGR
+                                                                RR                                                                                                                    G
+                                                                 RGGR                                                                                                                 G
+                                                                    G                                                                                                               RGR
+                                                                    G                                                                                                            RGGR
+                                                                    RR                                                                                                           G
+                                                                     G                                                                                                          RR
+                                                                     RGGR                                                                                                       G
+                                                                        G                                                                                                     RGR
+                                                                        G                                                                                                  RGGR
+                                                                        RGR                                                                                                G
+                                                                          RGR                                                                                              G
+                                                                            RGR                                                                                            G
+                                                                              G                                                                                           RR
+                                                                              G                                                                                         RGR
+                                                                              RGR                                                                                       G
+                                                                                G                                                                                     RGR
+                                                                                RR                                                                                    G
+                                                                                 G                                                                                  RGR
+                                                                                 RGR                                                                                G
+                                                                                   G                                                                              RGR
+                                                                                   RGR                                                                            G
+                                                                                     G                                                                          RGR
+                                                                                     G                                                                        RGR
+                                                                                     RGGR                                                                     G
+                                                                                        RGR                                                                   G
+                                                                                          G                                                                 RGR
+                                                                                          G                                                               RGR
+                                                                                          RGR                                                             G
+                                                                                            G RGR                                                         G
+                                                                                            RGR G                                                         G
+                                                                                                G                                                       RGR
+                                                                                                RGR                                                     G
+                                                                                                  G                                                   RGR
+                                                                                                  RGR                                                 G
+                                                                                                    G                                               RGR
+                                                                                                    G                                             RGR
+                                                                                                    G                                         RGR G
+                                                                                                    RGR                                       G G G
+                                                                                                      G RGR                                   G G G
+                                                                                                      G G G                                   G RGR
+                                                                                                      RGR G                                   G
+                                                                                                          RGR                                 G
+                                                                                                            G                               RGR
+                                                                                                            RGR                             G
+                                                                                                              G                           RGR
+                                                                                                              G                         RGR
+                                                                                                              G                   RGR   G
+                                                                                                              G                   G G RGR
+                                                                                                              G               RGR G G G
+                                                                                                              G               G G G RGR
+                                                                                                              G     RGR       G G G
+                                                                                                              RGR   G G       G G G
+                                                                                                                G   G G     RGR G G
+                                                                                                                RGR G G     G   G G
+                                                                                                                  G G G   RGR   G G
+                                                                                                                  G G G   G     RGR
+                                                                                                                  RGR G   G
+                                                                                                                      RGR G
+                                                                                                                        RGR
