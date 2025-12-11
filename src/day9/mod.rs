@@ -30,17 +30,13 @@ pub(crate) fn solve_day9() {
     // println!("\nPoints: {:?}", points);
     // println!("\nLines: {:?}", lines);
 
-    let (idx, max_constrained_area) = largest_constrained_area(&areas, &points, &mut squares, &lines);
+    let (idx, max_constrained_area) =
+        largest_constrained_area(&areas, &points, &mut squares, &lines);
     println!("Largest constrained area: {}", max_constrained_area);
 
     // Draw the rectangle
     println!("Showing area[{}]", idx);
-    draw_rectangle(
-        &points,
-        areas[idx].p1_idx,
-        areas[idx].p2_idx,
-        &mut squares,
-    );
+    draw_rectangle(&points, areas[idx].p1_idx, areas[idx].p2_idx, &mut squares);
 
     print_squares(&squares);
     // Checking area[103606]: 1429043625 is too low
@@ -64,8 +60,8 @@ impl Display for Square {
             Square::Red => write!(f, "R"),
             Square::Green => write!(f, "G"),
             Square::Inside => write!(f, "i"),
-            Square::Outside => write!(f, "o"),
-            Square::Unknown => write!(f, " "),
+            Square::Outside => write!(f, " "),
+            Square::Unknown => write!(f, "?"),
             Square::Rectangle => write!(f, "*"),
         }
     }
@@ -89,8 +85,8 @@ impl From<&str> for Point {
     fn from(value: &str) -> Self {
         let split: Vec<&str> = value.trim().split(',').collect();
         Self {
-            x: i64::from_str_radix(split[1], 10).unwrap(),
-            y: i64::from_str_radix(split[0], 10).unwrap(),
+            x: i64::from_str_radix(split[0], 10).unwrap(),
+            y: i64::from_str_radix(split[1], 10).unwrap(),
             map_x: 0, // Will fill in later
             map_y: 0, // Will fill in later
         }
@@ -100,11 +96,9 @@ impl From<&str> for Point {
 #[derive(Debug)]
 struct Line<'a> {
     start: &'a Point,
+    end: &'a Point,
     current: (usize, usize),
     update: (usize, usize),
-    end: &'a Point,
-    p1: &'a Point,
-    p2: &'a Point,
 }
 
 impl<'a> Iterator for Line<'a> {
@@ -133,22 +127,21 @@ impl<'a> Line<'a> {
             (p1.map_x as i64 - p2.map_x as i64).signum(),
             (p1.map_y as i64 - p2.map_y as i64).signum(),
         );
-        let (current, start, end): ((usize, usize), &Point, &Point) = if update_test.0 < 0 || update_test.1 < 0 {
-            // P2 has a higher coordinate - use P1
-            ((p1.map_x, p1.map_y), p1, p2)
-        } else {
-            // P1 has a higher coordinate - use P2
-            ((p2.map_x, p2.map_y), p2, p1)
-        };
+        let (current, start, end): ((usize, usize), &Point, &Point) =
+            if update_test.0 < 0 || update_test.1 < 0 {
+                // P2 has a higher coordinate - use P1
+                ((p1.map_x, p1.map_y), p1, p2)
+            } else {
+                // P1 has a higher coordinate - use P2
+                ((p2.map_x, p2.map_y), p2, p1)
+            };
         let update = (update_test.0.abs() as usize, update_test.1.abs() as usize);
 
         Self {
             start,
+            end,
             current,
             update,
-            end,
-            p1,
-            p2,
         }
     }
 }
@@ -157,7 +150,7 @@ fn largest_constrained_area(
     areas: &Vec<Area>,
     points: &Vec<Point>,
     squares: &mut Vec<Vec<Square>>,
-    lines: &Vec<Line>
+    lines: &Vec<Line>,
 ) -> (usize, u64) {
     let mut max_area = 0;
     let count = points.len();
@@ -167,7 +160,8 @@ fn largest_constrained_area(
 
     for (i, area) in areas.iter().enumerate() {
         // println!("Checking area[{}]: {}", idx, area.area);
-        if is_rectangle_within_polygon(&points[area.p1_idx], &points[area.p2_idx], &squares, lines) {
+        if is_rectangle_within_polygon(&points[area.p1_idx], &points[area.p2_idx], &squares, lines)
+        {
             p1 = area.p1_idx;
             p2 = area.p2_idx;
             max_area = area.area;
@@ -238,11 +232,11 @@ fn is_rectangle_within_polygon(
         Line::new(p2, p21),
         Line::new(p21, p1),
     ];
-    for rect_line in rect_lines {
+    for rect_line in &rect_lines {
         // Check if this line intersects any line in the list
         for line in lines {
             if do_lines_cross_through(&rect_line, &line) {
-                println!("Lines cross through!\n{:?}\n{:?}", rect_line, line);
+                // println!("Lines cross through!\n{:?}\n{:?}", rect_line, line);
                 line_check = false;
                 break;
             }
@@ -250,33 +244,67 @@ fn is_rectangle_within_polygon(
     }
 
     if line_check != map_check {
-        println!("Line check and map check do not line up!");
+        println!(
+            "Line check ({}) and map check ({}) do not line up!",
+            line_check, map_check
+        );
+        println!("{:?}\n{:?}", p1, p2);
+        for (i, rect_line) in rect_lines.iter().enumerate() {
+            println!("{}: {:?}", i, rect_line);
+            // Check if this line intersects any line in the list
+            for line in lines {
+                if do_lines_cross_through(&rect_line, &line) {
+                    println!("{}: lines cross!\n{:?}\n{:?}", i, rect_line, line);
+                }
+            }
+        }
     }
 
-    return line_check || map_check;
+    // return line_check || map_check;
+    return line_check;
 }
 
 /// Returns true if the lines fully cross through each other
-///   |      ---     --=---
-/// ------     --- 
-///   |        no      no
+///   |          --|---   ---     --=---
+/// ------         |        ---
+///   |            |        no      no
+/// L1: (2,0)--(2,5) L2: (1,2)--(4,2)
 fn do_lines_cross_through(l1: &Line, l2: &Line) -> bool {
+    // (59, 65)--(59, 192)
+    // (57, 181)--(60, 181)
+    // Should be true because:
+    //   65 < 181 and 192 > 181 and 59 >= 57 and 59 <= 60
+    // println!("l1: {:?}\nl2: {:?}", l1, l2);
+    (l1.start.x < l2.start.x // 59 < 57 nope
+        && l1.end.x > l2.end.x
+        && l1.start.y >= l2.start.y
+        && l1.start.y <= l2.end.y)
+        || (l1.start.y < l2.start.y // 65 < 181 yep
+            && l1.end.y > l2.end.y // 192 > 181 yep
+            && l1.start.x >= l2.start.x // 59 >= 60 nope
+            && l1.start.x <= l2.end.x) //  59 <= 60 nope
     // Check if l1 is horizontal or vertical
-    match l1.update {
-        (1, 0) => {
-        // (0, 1) => {
-            // Horizontal
-            l1.start.x < l2.start.x && l1.end.x > l2.end.x && l1.start.y >= l2.end.y && l1.start.y <= l2.end.y
-        },
-        (0, 1) => {
-        // (1, 0) => {
-            // Vertical
-            l1.start.y < l2.start.y && l1.end.y > l2.end.y && l1.start.x >= l2.end.x && l1.start.x <= l2.end.x
-        },
-        _ => {
-            panic!("Line must be horizontal or vertical");
-        },
-    }
+    // match l1.update {
+    //     (1, 0) => {
+    //         // (0, 1) => {
+    //         // Horizontal
+    //         l1.start.x < l2.start.x
+    //             && l1.end.x > l2.end.x
+    //             && l1.start.y >= l2.end.y
+    //             && l1.start.y <= l2.end.y
+    //     }
+    //     (0, 1) => {
+    //         // (1, 0) => {
+    //         // Vertical
+    //         l1.start.y < l2.start.y
+    //             && l1.end.y > l2.end.y
+    //             && l1.start.x >= l2.end.x
+    //             && l1.start.x <= l2.end.x
+    //     }
+    //     _ => {
+    //         panic!("Line must be horizontal or vertical");
+    //     }
+    // }
 }
 
 fn draw_rectangle(
@@ -351,8 +379,8 @@ fn populate_map<'a>(lines: &mut Vec<Line<'a>>, xlen: usize, ylen: usize) -> Vec<
     // Fill in the squares with red and green tiles from the points
     for line in lines {
         // Set the point's squares as red
-        squares[line.p1.map_y][line.p1.map_x] = Square::Red;
-        squares[line.p2.map_y][line.p2.map_x] = Square::Red;
+        squares[line.start.map_y][line.start.map_x] = Square::Red;
+        squares[line.end.map_y][line.end.map_x] = Square::Red;
         // println!(
         //     "Setiting ({}, {}) and ({}, {}) Red",
         //     line.p1.map_x, line.p1.map_y, line.p2.map_x, line.p2.map_y
@@ -609,5 +637,81 @@ fn test_map_monotonic(map: &Vec<i64>) {
         for j in 0..i {
             assert!(map[i] > map[j]);
         }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    fn test_line_cross_through() {
+        let l1 = Line {
+            start: &Point {
+                x: 59,
+                y: 65,
+                map_x: 59,
+                map_y: 65,
+            },
+            end: &Point {
+                x: 59,
+                y: 192,
+                map_x: 59,
+                map_y: 192,
+            },
+            current: (0, 0),
+            update: (0, 1),
+        };
+        let l2 = Line {
+            start: &Point {
+                x: 57,
+                y: 181,
+                map_x: 57,
+                map_y: 181,
+            },
+            end: &Point {
+                x: 60,
+                y: 181,
+                map_x: 60,
+                map_y: 181,
+            },
+            current: (0, 0),
+            update: (1, 0),
+        };
+        assert!(do_lines_cross_through(&l1, &l2));
+        
+        let l3 = Line {
+            start: &Point {
+                x: 2,
+                y: 0,
+                map_x: 2,
+                map_y: 0,
+            },
+            end: &Point {
+                x: 2,
+                y: 5,
+                map_x: 2,
+                map_y: 5,
+            },
+            current: (0, 0),
+            update: (0, 1),
+        };
+        let l4 = Line {
+            start: &Point {
+                x: 1,
+                y: 2,
+                map_x: 1,
+                map_y: 2,
+            },
+            end: &Point {
+                x: 4,
+                y: 2,
+                map_x: 4,
+                map_y: 2,
+            },
+            current: (0, 0),
+            update: (1, 0),
+        };
+        assert!(do_lines_cross_through(&l3, &l4));
     }
 }
