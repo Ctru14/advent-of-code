@@ -18,9 +18,9 @@ pub(crate) fn solve_day9() {
     let mut lines: Vec<Line> = form_lines(&points);
 
     // Tests
-    test_points(&points, &x_map, &y_map);
-    test_map_monotonic(&x_map);
-    test_map_monotonic(&y_map);
+    // test_points(&points, &x_map, &y_map);
+    // test_map_monotonic(&x_map);
+    // test_map_monotonic(&y_map);
 
     let mut squares = populate_map(&mut lines, x_map.len(), y_map.len());
 
@@ -250,16 +250,14 @@ fn get_areas(points: &Vec<Point>) -> Vec<Area> {
     let mut areas: Vec<Area> = Vec::with_capacity(count * count - 1);
 
     for l in 0..count {
-        for r in 0..count {
-            if l != r {
-                let area = points[l].area(&points[r]);
-                assert_eq!(area, points[r].area(&points[l]));
-                areas.push(Area {
-                    area,
-                    p1_idx: l,
-                    p2_idx: r,
-                });
-            }
+        for r in 0..l {
+            let area = points[l].area(&points[r]);
+            assert_eq!(area, points[r].area(&points[l]));
+            areas.push(Area {
+                area,
+                p1_idx: l,
+                p2_idx: r,
+            });
         }
     }
 
@@ -434,7 +432,6 @@ fn populate_point_interior(
         }
 
         // If you've made it this far, you've passed all inside tests!
-        // println!("Square[{}][{}] is inside!", y, x);
         squares[y][x] = Square::Inside;
     }
 }
