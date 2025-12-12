@@ -5,13 +5,23 @@ pub(crate) fn solve_day10() {
 
     let machines = parse_input(input);
 
-    let mut sum: usize = 0;
-    for machine in machines {
+    // Part 1: Toggle indicator lights
+    let mut indicator_lights_sum: usize = 0;
+    for machine in &machines {
         let min_buttons = machine.solve_lights();
-        sum += min_buttons;
+        indicator_lights_sum += min_buttons;
     }
 
-    println!("Sum of number of hits: {}", sum);
+    println!("Indicator lights: Sum of number of hits: {}", indicator_lights_sum);
+
+    // Part 2: Increase Joltage
+    let mut joltage_sum: usize = 0;
+    for machine in &machines {
+        let min_buttons = machine.solve_joltage();
+        joltage_sum += min_buttons;
+    }
+    
+    println!("Joltage: Sum of number of hits: {}", joltage_sum);
 }
 
 #[derive(Clone, Debug)]
@@ -22,8 +32,52 @@ struct Machine {
 }
 
 impl Machine {
-    /// Counts the lowest number of presses of groups of its buttons
-    /// requred to turn on the desired indicator lights
+    /// Return the lowest number of presses of groups of buttons required to
+    /// increase the joltage to the desired amounts
+    fn solve_joltage(&self) -> usize {
+        let mut count = 0;
+
+        // Keep checking all possible combinations of number of buttons pressed
+        // Start with the max of the joltage numbers, the answer will never be less
+        let mut presses = *self.joltage.iter().max().unwrap();
+        loop {
+            if self.check_joltage_counters(presses) {
+                count = presses;
+                break;
+            }
+            presses += 1;
+        }
+
+        count
+    }
+
+    /// Check if the joltage levels can be achieved by the number of presses
+    fn check_joltage_counters(&self, presses: usize) -> bool {
+        println!("n: {}, presses: {}", self.buttons.len(), presses);
+        for button_sets in SelectNCountIter::new(self.buttons.len(), presses) {
+            // Index of each button_sets corresponds to index of each button to press,
+            // value corresponds to how many times to press it
+            // println!("Button Sets: {:?}", button_sets);
+            let mut joltage_test = vec![0; self.joltage.len()];
+            // Each iteration is +1 button press
+            for button_set_to_press in button_sets {
+                for &button in &self.buttons[button_set_to_press] {
+                    joltage_test[button] += 1;
+                }
+            }
+
+            if joltage_test == self.joltage {
+                println!("Min number found: {}", presses);
+                return true;
+            }
+        }
+
+        false
+        
+    }
+
+    /// Counts the lowest number of presses of groups of its buttons required to
+    /// turn on the desired indicator lights
     fn solve_lights(&self) -> usize {
         let mut count: usize = 0;
 
@@ -63,9 +117,66 @@ impl Machine {
     }
 }
 
+struct SelectNCountIter {
+    n: usize,
+    /// Vec length of count, where each of them correspond to the index of each selection
+    /// Each value will range from 0..=n
+    next: Option<Vec<usize>>,
+
+}
+
+impl SelectNCountIter {
+    fn new(n: usize, count: usize) -> Self {
+        let next: Vec<usize> = vec![0; count];
+        Self { n, next: Some(next) }
+    }
+}
+
+impl Iterator for SelectNCountIter {
+    type Item = Vec<usize>;
+
+    /// Ex: 5 choose 3
+    /// 0 0 0
+    /// 0 0 1
+    /// ...
+    /// 0 0 5
+    /// 0 1 0 Overflow!
+    /// 0 1 1
+    ///  ...
+    /// 0 1 5
+    /// 0 2 0 Overflow!
+    fn next(&mut self) -> Option<Self::Item> {
+        // Increment the lowest index
+        // If its new value is greater than the count, increment the next one and reset these
+        // End when all values are n
+        let n = self.n;
+        let rtn = self.next.clone();
+        if let Some(next) = &mut self.next {
+            for val in next {
+                *val += 1;
+                if *val >= n {
+                    *val = 0;
+                } else {
+                    break;
+                }
+            }
+        }
+
+        // Check end condition
+        if let Some(next) = &self.next {
+            if next.iter().sum::<usize>() == 0 {
+                self.next = None;
+            }
+        }
+
+        rtn
+    }
+}
+
 struct NChooseRIter {
     n: usize,
     r: usize,
+    /// Length r, values ranging from 0..n, corresponding to which indices to select
     next: Option<Vec<usize>>,
 }
 
@@ -128,21 +239,6 @@ impl Iterator for NChooseRIter {
                     next[i] = start_pos;
                     start_pos += 1;
                 }
-
-                // for idx in 0..self.r {
-                //     println!(
-                //         "n: {}, r: {}. idx: {}, self.r-1-idx: {}, self.n-1-idx: {}",
-                //         self.n,
-                //         self.r,
-                //         idx,
-                //         self.r - 1 - idx,
-                //         self.n - 1 - idx
-                //     );
-                //     if self.next[self.r - 1 - idx] < self.n - 1 - idx {
-                //         self.next[self.r - 1 - idx] += 1;
-                //         return Some(self.next.clone());
-                //     }
-                // }
             }
         }
 
@@ -178,7 +274,7 @@ impl From<&str> for Machine {
         }
 
         // Joltage: {3,5,4,7}
-        let mut joltage: Vec<usize> = split[split.len() - 1][1..split[split.len() - 1].len() - 1]
+        let joltage: Vec<usize> = split[split.len() - 1][1..split[split.len() - 1].len() - 1]
             .split(',')
             .map(|s| usize::from_str_radix(s, 10).unwrap())
             .collect();
@@ -261,6 +357,24 @@ mod test {
 
         for (idx, item) in NChooseRIter::new(4, 2).enumerate() {
             assert_eq!(ncr42_expected[idx], item);
+        }
+    }
+
+    #[test]
+    fn test_selectncount_iter() {
+        let select1of3iter = SelectNCountIter::new(3, 1);
+        let s13_expected = vec![
+            vec![0],
+            vec![1],
+            vec![2],
+        ];
+
+        for (idx, item) in select1of3iter.enumerate() {
+            assert_eq!(s13_expected[idx], item);
+        }
+
+        for item in SelectNCountIter::new(5, 3) {
+            println!("{:?}", item);
         }
     }
 }
