@@ -5,3 +5,4 @@ edition = "2024"
 
 [dependencies]
 tokio = "1.48.0"
+# z3 = "0.19.6"

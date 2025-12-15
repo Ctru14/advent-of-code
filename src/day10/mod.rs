@@ -1,3 +1,5 @@
+use z3::{Solver, ast::Int};
+
 pub(crate) fn solve_day10() {
     // Get the input: List of factory machine information
     let input = include_str!("day10-input.txt");
@@ -41,9 +43,56 @@ impl Machine {
         // Turn the buttons and desired joltage into a matrix
         let mut mat = self.get_joltage_matrix();
 
+        // Reduce the matrix to speed up solver
         mat.gauss_jordan_elimination();
 
-        0
+        // Set up Z3 solver
+        let solver = Solver::new();
+        let vars: Vec<Int> = Vec::with_capacity(mat.cols()-1);
+        for i in 0..mat.cols()-1 {
+            vars.push(Int::fresh_const(format!("v{}", i)));
+        }
+
+        // Constraints
+        // Vars cannot be negative
+        vars.iter().for_each(|var| solver.assert(var.ge(0)));
+        
+        // Add any rows to the solver that have more than 2 item remaining
+        let mut count = 0;
+        let mut some_solve_count = false;
+        for row in mat.0 {
+            let mut nonzero_count: usize = 0;
+            row.iter().for_each(|&val| {
+                if val != 0 {
+                    nonzero_count += 1;
+                }
+            });
+            match nonzero_count {
+                0 => {}, // Ignore empty row
+                1 | 2 => {
+                    // Solved variable - add constant
+                    let (idx, _val) = Matrix::get_first_nonzero_value(&row).unwrap();
+                    solver.assert(vars[idx].eq(row[row.len()-1]));
+                }
+                _ => {
+                    // Add this equation to the solver
+                    solver.assert((vars.iter().enumerate().for_each(|(idx, var)| var * row[idx])).eq(row[row.len()-1]));
+                }
+            }
+        }
+
+        // Solve and check solutions
+        let mut min_presses = usize::MAX;
+        for solution in solver.solutions(vars, true).take(100) {
+            let solution: Vec<usize> = solution.iter().map(Int::as_u64).map(Option::unwrap).collect();
+            let sum: usize = solution.iter().sum();
+            if sum < min_presses {
+                min_presses = sum;
+            }
+        }
+
+        println!("Entry can be solved in {} presses", min_presses);
+        min_presses
     }
 
     /// Creates a matrix of the button presses and the desired joltage
@@ -164,6 +213,16 @@ impl Machine {
 struct Matrix(Vec<Vec<i32>>);
 
 impl Matrix {
+    /// Returns the number of rows
+    fn rows(&self) -> usize {
+        self.0.len()
+    }
+
+    /// Returns the number of columns
+    fn cols(&self) -> usize {
+        self.0[0].len()
+    }
+
     /// Performs Gauss-Jordan elimination to reduce a matrix
     fn gauss_jordan_elimination(&mut self) {
         let rows = self.0.len();
@@ -193,7 +252,7 @@ impl Matrix {
             let rescale_result = Self::try_rescale_row(&mut self.0[r]);
 
             // 4. Add/Subtract this row from any following rows which also contain our pivot column
-            // Only attempt this subtraction if the previous rescale attempt passed 
+            // Only attempt this subtraction if the previous rescale attempt passed
             // so the pivot column value will be 1
             if rescale_result.is_ok() {
                 self.subtract_out_pivot(r, pivot_col);
@@ -222,7 +281,7 @@ impl Matrix {
         let cols = self.0[0].len();
 
         // Last column is the result, do not count it
-        for check_col in start_col..cols-1 {
+        for check_col in start_col..cols - 1 {
             for check_row in start_row..rows {
                 if self.0[check_row][check_col] != 0 {
                     return Some((check_row, check_col));
@@ -573,7 +632,7 @@ mod test {
 
     #[test]
     fn test_selectncount_iter() {
-        let select1of3iter = _SelectNCountIter::new(3, 1);
+        let select1of3iter = _SelectNCountIter::_new(3, 1);
         let s13_expected = vec![vec![0], vec![1], vec![2]];
 
         for (idx, item) in select1of3iter.enumerate() {
@@ -631,10 +690,24 @@ mod test {
             vec![0, 0, 0, 0, 0, 1, 2],
         ]);
 
-        println!("M2 Expected:");
-        print_matrix(&m2_expected);
-
         assert_eq!(m2, m2_expected);
         println!("Matrix 2 passed!");
+
+        let mut m3 = Matrix(vec![
+            vec![0,0,0,0,1,1,3],
+            vec![0,1,0,0,0,1,5],
+            vec![0,0,1,1,1,0,4],
+            vec![1,1,0,1,0,0,7],
+        ]);
+        m3.gauss_jordan_elimination();;
+
+        let m3_expected = Matrix(vec![
+            vec![1,0,0,1,0,-1,2],
+            vec![0,1,0,0,0,1,5],
+            vec![0,0,1,1,0,-1,1],
+            vec![0,0,0,0,1,1,3]
+        ]);
+
+        assert_eq!(m3, m3_expected);
     }
 }
