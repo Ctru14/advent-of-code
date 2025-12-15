@@ -2,12 +2,50 @@ use std::collections::HashMap;
 
 pub(crate) fn solve_day11() {
     // Get the input: data paths from a server
-    // let input = include_str!("day11-input.txt");
-    let input = include_str!("day11-test.txt");
+    let input = include_str!("day11-input.txt");
+    // let input = include_str!("day11-test-p1.txt");
+    // let input = include_str!("day11-test-p2.txt");
 
     let servers = construct_servers(input);
+    // print_servers(&servers);
 
-    print_servers(&servers);
+    // P1: Paths from you to out
+    let mut cache: HashMap<&str, usize> = HashMap::new();
+    let you_out_paths = how_many_paths_between("you", "out", &servers, &mut cache);
+    println!("P1: There are {} paths from 'you' to 'out'", you_out_paths);
+
+    // P2: Paths from svr to out that contain both fft and dac
+    let svr_dac = how_many_paths_between("svr", "dac", &servers, &mut HashMap::new());
+    let svr_fft = how_many_paths_between("svr", "fft", &servers, &mut HashMap::new());
+    let dac_fft = how_many_paths_between("dac", "fft", &servers, &mut HashMap::new());
+    let fft_dac = how_many_paths_between("fft", "dac", &servers, &mut HashMap::new());
+    let dac_out = how_many_paths_between("dac", "out", &servers, &mut HashMap::new());
+    let fft_out = how_many_paths_between("fft", "out", &servers, &mut HashMap::new());
+
+    println!(
+        "P2: Paths between:\nsvr-dac: {}\nsvr-fft: {}\ndac-fft: {}\nfft-dac: {}\ndac-out: {}\nfft-out: {}",
+        svr_dac, svr_fft, dac_fft, fft_dac, dac_out, fft_out
+    );
+
+    // Logic to find number of paths:
+    // Since there are no loops in this graph, exactly one of fft-dac and dac-fft paths will be zero
+    let (svr_first, first_second, second_out) = match (dac_fft, fft_dac) {
+        (0, _) => {
+            // FFT comes before DAC
+            (svr_fft, fft_dac, dac_out)
+        }
+        (_, 0) => {
+            // DAC comes before FFT
+            (svr_dac, dac_fft, fft_out)
+        }
+        _ => {
+            panic!("AAAAHHHH");
+        }
+    };
+
+    println!("\nsvr-first: {}\nfirst-second: {}\nsecond-out: {}", svr_first, first_second, second_out);
+    let total = svr_first * first_second * second_out;
+    println!("\nTotal paths: {}", total);
 }
 
 #[derive(Debug)]
@@ -28,6 +66,30 @@ impl<'a> From<&'a str> for Server<'a> {
             outputs,
         }
     }
+}
+
+/// Counts the paths from one server to another
+fn how_many_paths_between<'a>(
+    from: &'a str, // Server,
+    to: &'a str,   // Server,
+    servers: &'a HashMap<&'a str, Server<'a>>,
+    cache: &mut HashMap<&'a str, usize>,
+) -> usize {
+    if from == to {
+        // Ending case
+        return 1;
+    }
+    if let Some(&val) = cache.get(from) {
+        return val;
+    }
+    let from_node = servers.get(from).unwrap();
+    let val: usize = from_node
+        .outputs
+        .iter()
+        .map(|&node| how_many_paths_between(node, to, servers, cache))
+        .sum();
+    cache.insert(from, val);
+    val
 }
 
 /// Construct a HashMap of servers from the given lines
