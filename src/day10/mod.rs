@@ -20,12 +20,14 @@ pub(crate) fn solve_day10() {
     );
 
     // Part 2: Increase Joltage
-    let mut joltage_sum: usize = 0;
+    let mut joltage_sum: u64 = 0;
     for machine in &machines {
         let min_buttons = machine.solve_joltage();
         joltage_sum += min_buttons;
     }
 
+    // 20735 too high
+    // 20617 - just right!
     println!("Joltage: Sum of number of hits: {}", joltage_sum);
 }
 
@@ -39,56 +41,53 @@ struct Machine {
 impl Machine {
     /// Return the lowest number of presses of groups of buttons required to
     /// increase the joltage to the desired amounts
-    fn solve_joltage(&self) -> usize {
+    fn solve_joltage(&self) -> u64 {
         // Turn the buttons and desired joltage into a matrix
-        let mut mat = self.get_joltage_matrix();
-
-        // Reduce the matrix to speed up solver
-        mat.gauss_jordan_elimination();
+        let mat = self.get_joltage_matrix();
 
         // Set up Z3 solver
         let solver = Solver::new();
-        let vars: Vec<Int> = Vec::with_capacity(mat.cols()-1);
-        for i in 0..mat.cols()-1 {
-            vars.push(Int::fresh_const(format!("v{}", i)));
+        let mut vars: Vec<Int> = Vec::with_capacity(mat.cols() - 1);
+        for i in 0..mat.cols() - 1 {
+            vars.push(Int::fresh_const(&format!("v{}", i)));
         }
 
         // Constraints
         // Vars cannot be negative
         vars.iter().for_each(|var| solver.assert(var.ge(0)));
-        
-        // Add any rows to the solver that have more than 2 item remaining
-        let mut count = 0;
-        let mut some_solve_count = false;
+
+        // Matrix row: 
         for row in mat.0 {
-            let mut nonzero_count: usize = 0;
-            row.iter().for_each(|&val| {
-                if val != 0 {
-                    nonzero_count += 1;
-                }
-            });
-            match nonzero_count {
-                0 => {}, // Ignore empty row
-                1 | 2 => {
-                    // Solved variable - add constant
-                    let (idx, _val) = Matrix::get_first_nonzero_value(&row).unwrap();
-                    solver.assert(vars[idx].eq(row[row.len()-1]));
-                }
-                _ => {
                     // Add this equation to the solver
-                    solver.assert((vars.iter().enumerate().for_each(|(idx, var)| var * row[idx])).eq(row[row.len()-1]));
-                }
-            }
+                    let lhs = vars
+                        .iter()
+                        .zip(row.iter())
+                        .map(|(var, &coeff)| var * &Int::from(coeff))
+                        .reduce(|acc, term| acc + (&term))
+                        .unwrap();
+                    let rhs = Int::from(row[row.len() - 1]);
+                    solver.assert(&lhs.eq(&rhs));
         }
 
         // Solve and check solutions
-        let mut min_presses = usize::MAX;
-        for solution in solver.solutions(vars, true).take(100) {
-            let solution: Vec<usize> = solution.iter().map(Int::as_u64).map(Option::unwrap).collect();
-            let sum: usize = solution.iter().sum();
+        let mut min_presses = u64::MAX;
+        for solution in solver.solutions(vars, true) {
+            let solution: Vec<u64> = solution
+                .iter()
+                .map(Int::as_u64)
+                .map(Option::unwrap)
+                .collect();
+            let sum: u64 = solution.iter().sum();
             if sum < min_presses {
                 min_presses = sum;
+                println!("Solution: {:?}", solution);
             }
+        }
+
+        if min_presses == u64::MAX {
+            println!("ERROR: No solution!");
+            let mat = self.get_joltage_matrix();
+            print_matrix(&mat);
         }
 
         println!("Entry can be solved in {} presses", min_presses);
@@ -130,7 +129,7 @@ impl Machine {
     /// Checks all possible values starting from max of the joltage values
     /// Will never complete before the heat death of the universe
     fn _solve_joltage_brute_force(&self) -> usize {
-        let mut count = 0;
+        let count;
 
         // Keep checking all possible combinations of number of buttons pressed
         // Start with the max of the joltage numbers, the answer will never be less
@@ -214,7 +213,7 @@ struct Matrix(Vec<Vec<i32>>);
 
 impl Matrix {
     /// Returns the number of rows
-    fn rows(&self) -> usize {
+    fn _rows(&self) -> usize {
         self.0.len()
     }
 
@@ -224,7 +223,7 @@ impl Matrix {
     }
 
     /// Performs Gauss-Jordan elimination to reduce a matrix
-    fn gauss_jordan_elimination(&mut self) {
+    fn _gauss_jordan_elimination(&mut self) {
         let rows = self.0.len();
 
         // Current index of the column which is being transformed into a 1
@@ -236,7 +235,7 @@ impl Matrix {
         for r in 0..rows {
             // 1. Find the next available pivot column
             // Check each column for the presence of a nonzero value
-            (pivot_row, pivot_col) = match self.next_available_pivot_column(r, pivot_col) {
+            (pivot_row, pivot_col) = match self._next_available_pivot_column(r, pivot_col) {
                 Some((row, col)) => (row, col),
                 None => {
                     // Unable to find another pivot value. Ending
@@ -249,18 +248,18 @@ impl Matrix {
             // Now the row with the pivot column is at index r
 
             // 3. Scale the row if needed so the pivot column entry is equal to 1
-            let rescale_result = Self::try_rescale_row(&mut self.0[r]);
+            let rescale_result = Self::_try_rescale_row(&mut self.0[r]);
 
             // 4. Add/Subtract this row from any following rows which also contain our pivot column
             // Only attempt this subtraction if the previous rescale attempt passed
             // so the pivot column value will be 1
             if rescale_result.is_ok() {
-                self.subtract_out_pivot(r, pivot_col);
+                self._subtract_out_pivot(r, pivot_col);
             }
 
             // Attempt to rescale any previously failed row
             if rescale_needed {
-                rescale_needed = self.try_rescale_and_subtract_first_n_rows(r).is_err();
+                rescale_needed = self._try_rescale_and_subtract_first_n_rows(r).is_err();
             }
 
             // Try a full rescale on next attempt if this row failed
@@ -272,7 +271,7 @@ impl Matrix {
 
     /// Returns the row and column index of the next available pivot column
     /// beginning from the provided indices
-    fn next_available_pivot_column(
+    fn _next_available_pivot_column(
         &self,
         start_row: usize,
         start_col: usize,
@@ -296,16 +295,16 @@ impl Matrix {
     /// so that the first nonzero value in that row is 1
     ///
     /// Return: Result whether all rows are properly rescaled
-    fn try_rescale_and_subtract_first_n_rows(&mut self, n: usize) -> Result<(), ()> {
+    fn _try_rescale_and_subtract_first_n_rows(&mut self, n: usize) -> Result<(), ()> {
         let mut res = Ok(());
         for r in 0..n {
             // Check if this row needs a rescale
-            if let Some((pivot_col, val)) = Self::get_first_nonzero_value(&self.0[r])
+            if let Some((pivot_col, val)) = Self::_get_first_nonzero_value(&self.0[r])
                 && val != 1
             {
-                if Self::try_rescale_row(&mut self.0[r]).is_ok() {
+                if Self::_try_rescale_row(&mut self.0[r]).is_ok() {
                     // Row rescaled! Now subtract with it
-                    self.subtract_out_pivot(r, pivot_col);
+                    self._subtract_out_pivot(r, pivot_col);
                 } else {
                     res = Err(());
                 }
@@ -319,8 +318,8 @@ impl Matrix {
     /// Row of all zeros is properly scaled and returns Ok(())
     ///
     /// Return: Result whether the row was properly rescaled
-    fn try_rescale_row(row: &mut Vec<i32>) -> Result<(), ()> {
-        if let Some((_idx, scale_val)) = Self::get_first_nonzero_value(row) {
+    fn _try_rescale_row(row: &mut Vec<i32>) -> Result<(), ()> {
+        if let Some((_idx, scale_val)) = Self::_get_first_nonzero_value(row) {
             match scale_val {
                 1 => Ok(()), // As expected
                 -1 => {
@@ -348,7 +347,7 @@ impl Matrix {
     }
 
     /// Subtracts out a pivot column using the equation in the specified row
-    fn subtract_out_pivot(&mut self, pivot_row: usize, pivot_col: usize) {
+    fn _subtract_out_pivot(&mut self, pivot_row: usize, pivot_col: usize) {
         let rows = self.0.len();
         let cols = self.0[0].len();
 
@@ -367,7 +366,7 @@ impl Matrix {
     }
 
     /// Returns the first nonzero value in the list along with its index
-    fn get_first_nonzero_value(row: &Vec<i32>) -> Option<(usize, i32)> {
+    fn _get_first_nonzero_value(row: &Vec<i32>) -> Option<(usize, i32)> {
         for (idx, &val) in row.iter().enumerate() {
             if val != 0 {
                 return Some((idx, val));
@@ -652,7 +651,7 @@ mod test {
             vec![1, 1, 1, 0, 0, 0, 1, 172],
             vec![1, 1, 0, 0, 1, 0, 0, 19],
         ]);
-        m1.gauss_jordan_elimination();
+        m1._gauss_jordan_elimination();
 
         assert_eq!(
             m1,
@@ -678,7 +677,7 @@ mod test {
             vec![1, 1, 0, 1, 0, 1, 41],
         ]);
         print_matrix(&m2);
-        m2.gauss_jordan_elimination();
+        m2._gauss_jordan_elimination();
         print_matrix(&m2);
 
         let m2_expected = Matrix(vec![
@@ -694,18 +693,18 @@ mod test {
         println!("Matrix 2 passed!");
 
         let mut m3 = Matrix(vec![
-            vec![0,0,0,0,1,1,3],
-            vec![0,1,0,0,0,1,5],
-            vec![0,0,1,1,1,0,4],
-            vec![1,1,0,1,0,0,7],
+            vec![0, 0, 0, 0, 1, 1, 3],
+            vec![0, 1, 0, 0, 0, 1, 5],
+            vec![0, 0, 1, 1, 1, 0, 4],
+            vec![1, 1, 0, 1, 0, 0, 7],
         ]);
-        m3.gauss_jordan_elimination();;
+        m3._gauss_jordan_elimination();
 
         let m3_expected = Matrix(vec![
-            vec![1,0,0,1,0,-1,2],
-            vec![0,1,0,0,0,1,5],
-            vec![0,0,1,1,0,-1,1],
-            vec![0,0,0,0,1,1,3]
+            vec![1, 0, 0, 1, 0, -1, 2],
+            vec![0, 1, 0, 0, 0, 1, 5],
+            vec![0, 0, 1, 1, 0, -1, 1],
+            vec![0, 0, 0, 0, 1, 1, 3],
         ]);
 
         assert_eq!(m3, m3_expected);

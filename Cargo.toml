@@ -5,4 +5,4 @@ edition = "2024"
 
 [dependencies]
 tokio = "1.48.0"
-# z3 = "0.19.6"
+z3 = { version = "0.19.6", features = ["gh-release"]}
