@@ -43,7 +43,10 @@ pub(crate) fn solve_day11() {
         }
     };
 
-    println!("\nsvr-first: {}\nfirst-second: {}\nsecond-out: {}", svr_first, first_second, second_out);
+    println!(
+        "\nsvr-first: {}\nfirst-second: {}\nsecond-out: {}",
+        svr_first, first_second, second_out
+    );
     let total = svr_first * first_second * second_out;
     println!("\nTotal paths: {}", total);
 }

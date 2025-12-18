@@ -56,17 +56,17 @@ impl Machine {
         // Vars cannot be negative
         vars.iter().for_each(|var| solver.assert(var.ge(0)));
 
-        // Matrix row: 
+        // Matrix row:
         for row in mat.0 {
-                    // Add this equation to the solver
-                    let lhs = vars
-                        .iter()
-                        .zip(row.iter())
-                        .map(|(var, &coeff)| var * &Int::from(coeff))
-                        .reduce(|acc, term| acc + (&term))
-                        .unwrap();
-                    let rhs = Int::from(row[row.len() - 1]);
-                    solver.assert(&lhs.eq(&rhs));
+            // Add this equation to the solver
+            let lhs = vars
+                .iter()
+                .zip(row.iter())
+                .map(|(var, &coeff)| var * &Int::from(coeff))
+                .reduce(|acc, term| acc + (&term))
+                .unwrap();
+            let rhs = Int::from(row[row.len() - 1]);
+            solver.assert(&lhs.eq(&rhs));
         }
 
         // Solve and check solutions
